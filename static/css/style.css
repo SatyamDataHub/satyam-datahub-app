@@ -1,0 +1,101 @@
+/* ... (all previous styles remain the same) ... */
+/* ---
+   Satyam DataHub - Professional Stylesheet
+   Version 7.2 (Contact Button)
+--- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root {
+  --primary-blue: #0052cc; --primary-hover: #0041a3; --light-blue-bg: #f0f5ff;
+  --success-green: #059669; --success-hover: #047857; --danger-red: #dc2626; --danger-hover: #b91c1c;
+  --gray-text: #374151; --gray-light-text: #6b7280; --gray-border: #d1d5db; --gray-background: #f8fafc;
+  --font-sans: 'Inter', sans-serif;
+}
+body { font-family: var(--font-sans); background-color: var(--gray-background); color: var(--gray-text); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+/* ... (all other styles from login, dashboard, etc.) ... */
+/* ... (they are included here for completeness) ... */
+.login-container { display: flex; min-height: 100vh; width: 100vw; }
+.left-panel { width: 45%; background: linear-gradient(to top right, #0052cc, #002c6e); padding: 3rem 4rem; display: flex; flex-direction: column; justify-content: space-between; color: white; }
+.logo-container { display: flex; align-items: center; gap: 1rem; }
+.logo-svg { height: 3rem; width: auto; } .logo-text { font-size: 1.75rem; font-weight: 800; }
+.steps-container { display: flex; flex-direction: column; gap: 2.5rem; }
+.step { display: flex; align-items: center; gap: 1.5rem; opacity: 0; transform: translateX(-30px); animation: slideIn 0.5s forwards; }
+.step:nth-child(1) { animation-delay: 0.2s; } .step:nth-child(2) { animation-delay: 0.4s; } .step:nth-child(3) { animation-delay: 0.6s; }
+.step-icon { width: 48px; height: 48px; background-color: rgba(255,255,255,0.1); border-radius: 9999px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.step h3 { font-weight: 700; font-size: 1.125rem; margin-bottom: 0.25rem; }
+.step p { font-size: 0.9rem; color: #e5e7eb; line-height: 1.5; }
+.right-panel { width: 55%; display: flex; align-items: center; justify-content: center; }
+.login-card { width: 100%; max-width: 28rem; padding: 2.5rem; opacity: 0; transform: translateY(30px); animation: slideUp 0.6s forwards; animation-delay: 0.1s; }
+.card-title { font-size: 1.875rem; font-weight: 800; color: #111827; }
+.card-subtitle { margin-top: 0.5rem; color: #4b5563; }
+.form-label { display: block; font-size: 0.875rem; font-weight: 500; color: var(--gray-text); }
+.form-input { display: block; width: 100%; border-radius: 0.5rem; border: 1px solid var(--gray-border); padding: 0.75rem 1rem; margin-top: 0.25rem; transition: all 0.2s; }
+.form-input:focus { outline: 2px solid transparent; outline-offset: 2px; border-color: var(--primary-blue); box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.3); }
+.btn-primary { display: flex; justify-content: center; background-color: var(--primary-blue); color: white; font-weight: 600; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid transparent; transition: background-color 0.2s; cursor: pointer;}
+.btn-primary:not([style*="width"]) { width: 100%; margin-top: 1.5rem; }
+.btn-primary:hover { background-color: var(--primary-hover); }
+.btn-secondary { background-color: var(--success-green); color: white; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid transparent; transition: background-color 0.2s; cursor: pointer; }
+.btn-secondary:hover { background-color: var(--success-hover); }
+.btn-danger { background-color: var(--danger-red); color: white; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid transparent; transition: background-color 0.2s; cursor: pointer; }
+.btn-danger:hover { background-color: var(--danger-hover); }
+.btn-tertiary { background-color: #f3f4f6; color: #374151; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid var(--gray-border); transition: background-color 0.2s; }
+.btn-tertiary:hover { background-color: #e5e7eb; }
+.logo-svg-header { height: 2.25rem; width: auto; }
+.logo-text-header { font-size: 1.25rem; font-weight: 700; color: #1f2937;}
+.table-header { padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-text); text-transform: uppercase; letter-spacing: 0.05em; }
+.table-cell { padding: 1rem 1.5rem; white-space: nowrap; font-size: 0.875rem; color: #374151; }
+.status-badge { padding: 0.25rem 0.75rem; display: inline-flex; font-size: 0.75rem; line-height: 1.25; font-weight: 600; border-radius: 9999px; }
+.project-card { display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem; border: 1px solid var(--gray-border); border-radius: 0.75rem; }
+.project-card.active { transition: all 0.2s; }
+.project-card.active:hover { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); border-color: #a5b4fc; background-color: var(--light-blue-bg); }
+.project-card.completed { background-color: #f3f4f6; color: #6b7280; }
+.project-icon { height: 3rem; width: 3rem; border-radius: 9999px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.wallet-card { background: linear-gradient(to right, #0052cc, #002c6e); color: white; padding: 1.5rem; border-radius: 0.75rem; }
+.form-label-sm { display: block; font-size: 0.75rem; font-weight: 500; color: #4b5563; }
+.form-input-sm { display: block; width: 100%; border-color: #e5e7eb; border-radius: 0.375rem; box-shadow: sm; font-size: 0.875rem; padding: 0.5rem; }
+.form-input-sm:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.3); outline: none; }
+.data-entry-container { max-width: 80rem; margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; padding: 2rem; }
+.image-viewer-card { background-color: white; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); overflow: hidden; }
+.task-header { background-color: #1f2937; color: white; padding: 1rem 1.5rem; }
+.task-title { font-family: 'Courier New', Courier, monospace; font-size: 1.25rem; font-weight: bold; }
+.image-wrapper { padding: 1rem; }
+.image-wrapper img { width: 100%; height: auto; border-radius: 0.5rem; }
+.form-card { background-color: white; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); padding: 2rem; }
+.timer-box { padding: 0.75rem; background-color: #fefce8; border: 1px solid #fef08a; border-radius: 0.5rem; text-align: center; }
+.flash-success, .flash-error, .flash-info { padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; font-weight: 500; }
+.flash-success { background-color: #d1fae5; color: #065f46; } .flash-error { background-color: #fee2e2; color: #991b1b; } .flash-info { background-color: var(--light-blue-bg); color: var(--primary-blue); }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+@media (max-width: 1024px) { .data-entry-container { grid-template-columns: 1fr; padding: 1rem; } }
+@media (max-width: 768px) { .login-container { flex-direction: column; } .left-panel { display: none; } .right-panel { width: 100%; padding: 1rem; } .login-card { padding: 1.5rem; } header, main { padding-left: 1rem; padding-right: 1rem; } .grid { grid-template-columns: 1fr; } }
+
+/* NEW STYLES: For Contact Button & Modal */
+.contact-fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background-color: #25D366; /* WhatsApp Green */
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    width: 60px;
+    height: 60px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 25;
+}
+.contact-fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+.contact-fab span {
+    display: none; /* Hide text by default */
+}
+.contact-fab i {
+    width: 32px;
+    height: 32px;
+}

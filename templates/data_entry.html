@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="data-entry-container">
+    <div class="image-viewer-card">
+        <div class="task-header">
+            <h3 class="task-title">TASK-{{ "%07d"|format(task.id) }}</h3>
+        </div>
+        <div class="image-wrapper">
+            <img src="{{ url_for('uploaded_file', filename=task.filename) }}" alt="Data entry task" />
+        </div>
+    </div>
+
+    <div class="form-card">
+        <form action="{{ url_for('data_entry', task_id=task.id) }}" method="POST" class="space-y-4">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-800">Data Entry Form</h2>
+                <a href="{{ url_for('view_project', project_id=task.project_id) }}" class="btn-tertiary">&larr; Back to Project</a>
+            </div>
+
+            <div id="timer-box" class="timer-box" data-expiry="{{ expiry_iso }}">
+                </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="form-label">Name</label><input type="text" name="name" value="{{ saved_data.get('name', '') }}" class="form-input" /></div>
+                <div><label class="form-label">Age</label><input type="text" name="age" value="{{ saved_data.get('age', '') }}" class="form-input" /></div>
+                <div><label class="form-label">Mobile Number</label><input type="text" name="mobileNumber" value="{{ saved_data.get('mobileNumber', '') }}" class="form-input" /></div>
+                <div><label class="form-label">Sex</label><select name="sex" class="form-input"><option {% if saved_data.get('sex') == 'Male' %}selected{% endif %}>Male</option><option {% if saved_data.get('sex') == 'Female' %}selected{% endif %}>Female</option><option {% if saved_data.get('sex') == 'Other' %}selected{% endif %}>Other</option></select></div>
+            </div>
+            <div><label class="form-label">Address</label><textarea name="address" rows="3" class="form-input">{{ saved_data.get('address', '') }}</textarea></div>
+            <div><label class="form-label">Receipt Number</label><input type="text" name="receiptNumber" value="{{ saved_data.get('receiptNumber', '') }}" class="form-input" /></div>
+            <div class="pt-5"><button type="submit" class="btn-primary">Save Progress</button></div>
+        </form>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('timer-box');
+    const expiryTime = new Date(container.dataset.expiry).getTime();
+
+    const updateTimer = () => {
+        const distance = expiryTime - new Date().getTime();
+
+        if (distance < 0) {
+            container.innerHTML = '<p class="font-bold text-red-600">Project Expired</p>';
+            const submitButton = document.querySelector('form button[type="submit"]');
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Expired';
+                submitButton.style.cursor = 'not-allowed';
+                submitButton.style.backgroundColor = '#9ca3af';
+            }
+            clearInterval(timerInterval); // Stop the timer
+            return;
+        }
+
+        const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((distance % (1000 * 60)) / 1000);
+
+        container.innerHTML = `<div class="flex items-center justify-center space-x-2"><i data-lucide="timer" class="w-5 h-5 text-yellow-600"></i><p>Time Remaining: <span class="font-bold text-gray-800">${d}d ${h}h ${m}m ${s}s</span></p></div>`;
+        lucide.createIcons(); // Re-render the icon
+    };
+
+    const timerInterval = setInterval(updateTimer, 1000);
+    updateTimer(); // Initial call
+});
+</script>
+{% endblock %}

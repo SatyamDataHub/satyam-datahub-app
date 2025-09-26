@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+<main class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+    <div class="mb-4">
+        <a href="{{ url_for('admin_dashboard') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">&larr; Back to Dashboard</a>
+        <h1 class="text-3xl font-bold text-gray-900 mt-2">Contact Form Inquiries</h1>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="table-header">Date</th>
+                        <th class="table-header">From</th>
+                        <th class="table-header">Contact Info</th>
+                        <th class="table-header">Message</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for item in inquiries %}
+                    <tr>
+                        <td class="table-cell whitespace-normal">{{ item.submitted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td class="table-cell font-medium">{{ item.name }}</td>
+                        <td class="table-cell whitespace-normal">
+                            <p>{{ item.email }}</p>
+                            {% if item.mobile_number %}<p>{{ item.mobile_number }}</p>{% endif %}
+                        </td>
+                        <td class="table-cell whitespace-normal">{{ item.message }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="py-8 text-center text-gray-500">There are no inquiries to display.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends "layout.html" %}
+{% block content %}
+<main class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8 space-y-8">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">Assign New Project</h2>
+            <form action="{{ url_for('assign_tasks') }}" method="POST" class="space-y-4">
+                <div>
+                    <label class="form-label">Select Employee</label>
+                    <select name="employee_select" onchange="showDetails(this.value)" class="form-input" required>
+                        <option value="">-- Select an employee --</option>
+                        {% for emp in active_employees %}
+                        <option value="{{ emp.id }}">{{ emp.name }} ({{ emp.employee_id }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div><label class="form-label">Number of Images (Available: {{ available_images }})</label><input type="number" name="task_count" min="1" max="{{ available_images }}" placeholder="# of images" class="form-input" required></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="form-label">Project Cost (₹)</label><input type="number" name="project_cost" min="0" step="0.01" placeholder="e.g., 50.00" class="form-input" required></div>
+                    <div><label class="form-label">Security (₹)</label><input type="number" name="security_money" min="0" step="0.01" placeholder="e.g., 5.00" class="form-input" required></div>
+                </div>
+                <div><label class="form-label">Project Expiry (Days)</label><input type="number" name="expiry_days" min="1" placeholder="e.g., 7" class="form-input" required></div>
+                <button type="submit" class="btn-primary">Create & Assign Project</button>
+            </form>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+             <h2 class="text-xl font-bold mb-4 text-gray-800">Create New Employee</h2>
+            <form action="{{ url_for('create_employee') }}" method="POST" class="space-y-4" autocomplete="off">
+                <div><label class="form-label">Full Name</label><input name="name" type="text" required class="form-input" autocomplete="new-name"></div>
+                <div><label class="form-label">Email Address</label><input name="email" type="email" required class="form-input" autocomplete="new-email"></div>
+                <div><label class="form-label">Password</label><input name="password" type="password" required class="form-input" autocomplete="new-password"></div>
+                <button type="submit" class="btn-primary">Create Employee</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">Projects Submitted for Review</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50"><tr><th class="table-header">Project Name</th><th class="table-header">Employee</th><th class="table-header">Submitted Date</th><th class="table-header">Actions</th></tr></thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for project in review_projects %}<tr><td class="table-cell font-medium">{{ project.project_name }}</td><td class="table-cell">{{ project.employee_name }}</td><td class="table-cell">{{ project.assigned_date.strftime('%Y-%m-%d') }}</td><td class="table-cell"><a href="{{ url_for('review_project', project_id=project.id) }}" class="btn-tertiary">View & Edit</a></td></tr>
+                    {% else %}<tr><td colspan="4" class="py-8 text-center text-gray-500">No projects are currently awaiting review.</td></tr>{% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div id="history" class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">Project History & Search</h2>
+        <form action="{{ url_for('admin_dashboard') }}#history" method="POST" class="flex items-center space-x-2 mb-6">
+            <input type="text" name="search_term" placeholder="Search by Project Name or Employee ID..." class="form-input flex-grow">
+            <button type="submit" class="btn-secondary">Search History</button>
+        </form>
+        {% if search_results is defined %}
+        <div class="overflow-x-auto border-t">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50"><tr><th class="table-header">Project Name</th><th class="table-header">Employee</th><th class="table-header">Status</th><th class="table-header">Actions</th></tr></thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for project in search_results %}
+                    <tr>
+                        <td class="table-cell font-medium">{{ project.project_name }}</td>
+                        <td class="table-cell">{{ project.employee_name }} ({{ project.emp_id }})</td>
+                        <td class="table-cell"><span class="font-semibold {% if project.status == 'Approved' %}text-green-600{% else %}text-red-600{% endif %}">{{ project.status }}</span></td>
+                        <td class="table-cell"><a href="{{ url_for('review_project', project_id=project.id) }}" class="btn-tertiary">View Details</a></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="py-8 text-center text-gray-500">No historical projects found for your search term.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</main>
+
+<div id="employeeModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full hidden z-20">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <img id="modalProfilePic" src="https://ui-avatars.com/api/?name=Satyam+DataHub" class="w-24 h-24 mx-auto rounded-full object-cover mb-4">
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalName">Employee Details</h3>
+            <div class="mt-2 px-7 py-3 text-left">
+                <p><strong>Employee ID:</strong> <span id="modalEmployeeId"></span></p><p><strong>Email:</strong> <span id="modalEmail"></span></p><p><strong>Wallet Balance:</strong> ₹<span id="modalWalletBalance"></span></p><p><strong>Status:</strong> <span id="modalStatus" class="font-bold"></span></p><p><strong>Projects Assigned:</strong> <span id="modalProjectsAssigned"></span></p><p><strong>Projects Completed:</strong> <span id="modalProjectsCompleted"></span></p>
+            </div>
+            <div class="items-center px-4 py-3 flex space-x-4">
+                <form id="toggleStatusForm" action="" method="POST" class="w-full"><button id="toggleStatusBtn" type="submit" class="w-full px-4 py-2 bg-yellow-500 text-white text-base font-medium rounded-md shadow-sm">Toggle</button></form>
+                <button onclick="closeModal()" class="w-full px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md shadow-sm">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function showDetails(userId) {
+        if (!userId) { closeModal(); return; }
+        fetch(`/admin/employee_details/${userId}`).then(response => response.json()).then(data => {
+            if (data.error) { alert(data.error); return; }
+            document.getElementById('modalName').textContent = data.name; document.getElementById('modalEmployeeId').textContent = data.employeeId;
+            document.getElementById('modalEmail').textContent = data.email; document.getElementById('modalWalletBalance').textContent = data.walletBalance;
+            document.getElementById('modalStatus').textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+            document.getElementById('modalProjectsAssigned').textContent = data.projectsAssigned; document.getElementById('modalProjectsCompleted').textContent = data.projectsCompleted;
+            const profilePic = document.getElementById('modalProfilePic');
+            if (data.profilePicture) { profilePic.src = `/avatars/${data.profilePicture}`; } 
+            else { profilePic.src = `https://ui-avatars.com/api/?name=${data.name.replace(' ', '+')}&background=0052cc&color=fff&bold=true`; }
+            const toggleBtn = document.getElementById('toggleStatusBtn'); const toggleForm = document.getElementById('toggleStatusForm');
+            toggleForm.action = `/admin/toggle_status/${data.id}`;
+            if (data.status === 'active') { toggleBtn.textContent = 'Deactivate Account'; toggleBtn.className = 'w-full px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md shadow-sm'; } 
+            else { toggleBtn.textContent = 'Activate Account'; toggleBtn.className = 'w-full px-4 py-2 bg-green-500 text-white text-base font-medium rounded-md shadow-sm'; }
+            document.getElementById('employeeModal').classList.remove('hidden');
+        });
+    }
+    function closeModal() { document.getElementById('employeeModal').classList.add('hidden'); }
+</script>
+{% endblock %}

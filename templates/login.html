@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="login-container">
+    <div class="left-panel">
+        <div class="logo-container">
+            <svg class="logo-svg" width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 7V17C4 18.1046 4.89543 19 6 19H18C19.1046 19 20 18.1046 20 17V10C20 8.89543 19.1046 8 18 8H7C5.34315 8 4 6.65685 4 5C4 4.44772 4.44772 4 5 4H16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 12H16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 15H13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="logo-text">Satyam DataHub</span>
+        </div>
+        <div class="steps-container">
+            <div class="step"><div class="step-icon"><i data-lucide="upload-cloud"></i></div><div><h3>Upload & Assign</h3><p>Easily upload image batches and create projects for your team.</p></div></div>
+            <div class="step"><div class="step-icon"><i data-lucide="edit-3"></i></div><div><h3>Process Data</h3><p>Enable focused, high-speed data entry with a clean interface.</p></div></div>
+            <div class="step"><div class="step-icon"><i data-lucide="check-check"></i></div><div><h3>Review & Finalize</h3><p>Admins can review, edit, and approve all submitted data.</p></div></div>
+        </div>
+    </div>
+    <div class="right-panel">
+        <div class="login-card">
+            <h2 class="card-title">Login to your account</h2>
+            <p class="card-subtitle">Welcome back! Please enter your details.</p>
+            {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="flash-{{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
+            <form action="{{ url_for('login') }}" method="POST" class="mt-6 space-y-4">
+                <div><label for="email" class="form-label">Email Address</label><input id="email" name="email" type="email" required class="form-input"></div>
+                <div><label for="password" class="form-label">Password</label><input id="password" name="password" type="password" required class="form-input"></div>
+                <button type="submit" class="btn-primary">Log In</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

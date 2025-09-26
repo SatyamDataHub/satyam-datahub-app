@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satyam DataHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="h-full font-sans">
+    <div id="app">
+        {% if g.user %}
+        <header class="bg-white shadow-sm sticky top-0 z-20">
+            <div class="mx-auto max-w-7xl py-3 px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between">
+                    <div class="logo-container">
+                        <svg class="logo-svg-header" width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 7V17C4 18.1046 4.89543 19 6 19H18C19.1046 19 20 18.1046 20 17V10C20 8.89543 19.1046 8 18 8H7C5.34315 8 4 6.65685 4 5C4 4.44772 4.44772 4 5 4H16" stroke="#0052cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M8 12H16" stroke="#0052cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M8 15H13" stroke="#0052cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <h1 class="logo-text-header">Satyam DataHub</h1>
+                    </div>
+                    
+                    <div class="relative">
+                        <button onclick="toggleMenu(event)" class="flex items-center space-x-2 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <span class="text-sm text-gray-600 font-medium hidden md:block">Welcome, {{ g.user.name }}</span>
+                            <img class="h-10 w-10 rounded-full object-cover" 
+                                 src="{{ url_for('avatar_file', filename=g.user.profile_picture) if g.user.profile_picture else 'https://ui-avatars.com/api/?name=' + g.user.name|replace(' ', '+') + '&background=0052cc&color=fff&bold=true' }}" 
+                                 alt="Profile picture">
+                        </button>
+                        
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
+                            {% if g.user.role == 'admin' %}
+                            <a href="{{ url_for('view_inquiries') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Contact Inquiries</a>
+                            {% endif %}
+                            {% if g.user.role == 'employee' %}
+                            <a href="{{ url_for('employee_profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Profile</a>
+                            {% endif %}
+                            <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+
+        {% if g.user %}
+        <button onclick="openContactModal()" class="contact-fab">
+            <i data-lucide="message-square"></i>
+        </button>
+        {% endif %}
+    </div>
+
+    <div id="contactModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 h-full w-full hidden z-30 flex items-center justify-center p-4">
+        <div class="relative p-8 bg-white w-full max-w-md rounded-lg shadow-lg">
+            <div id="contactFormContainer">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Contact Support</h3>
+                <form id="contactForm" class="space-y-4">
+                    <div><label class="form-label">Your Name</label><input type="text" name="name" class="form-input bg-gray-100 cursor-not-allowed" value="{{ g.user.name if g.user else '' }}" readonly></div>
+                    <div><label class="form-label">Your Email</label><input type="email" name="email" class="form-input bg-gray-100 cursor-not-allowed" value="{{ g.user.email if g.user else '' }}" readonly></div>
+                    <div><label class="form-label">Your Mobile Number</label><input type="tel" name="mobile_number" class="form-input" value="{{ g.user.phone_number or '' }}" placeholder="Enter your mobile number"></div>
+                    <div><label class="form-label">Your Query</label><textarea name="message" rows="4" class="form-input" placeholder="Please describe your issue..." required></textarea></div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeContactModal()" class="btn-tertiary">Cancel</button>
+                        <button type="submit" class="btn-primary" style="margin-top: 0; width: auto;">Send Query</button>
+                    </div>
+                </form>
+            </div>
+            <div id="contactSuccessContainer" class="hidden text-center">
+                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full mx-auto flex items-center justify-center mb-4"><i data-lucide="check" class="w-10 h-10"></i></div>
+                <h3 class="text-2xl font-bold text-gray-800">Query Sent!</h3>
+                <p class="text-gray-600 mt-2 mb-6">Thank you for reaching out. Please contact us on WhatsApp for a faster response.</p>
+                <a href="https://wa.me/917220022025" target="_blank" class="btn-secondary inline-flex items-center gap-2" style="width: auto;">
+                    <i data-lucide="message-circle"></i> Contact on WhatsApp
+                </a>
+                <button type="button" onclick="closeContactModal()" class="block mx-auto mt-4 text-sm text-gray-500 hover:text-indigo-600">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+      function toggleMenu(event) {
+          event.stopPropagation();
+          document.getElementById('userMenu').classList.toggle('hidden');
+      }
+      document.addEventListener('click', function(event) {
+          const userMenuButton = event.target.closest('.relative');
+          const userMenu = document.getElementById('userMenu');
+          if (userMenu && !userMenu.classList.contains('hidden') && !userMenuButton) {
+              userMenu.classList.add('hidden');
+          }
+      });
+
+      // JavaScript for Contact Modal
+      const contactModal = document.getElementById('contactModal');
+      const contactFormContainer = document.getElementById('contactFormContainer');
+      const contactSuccessContainer = document.getElementById('contactSuccessContainer');
+      const contactForm = document.getElementById('contactForm');
+
+      function openContactModal() {
+          contactModal.classList.remove('hidden');
+          contactFormContainer.classList.remove('hidden');
+          contactSuccessContainer.classList.add('hidden');
+          lucide.createIcons();
+      }
+
+      function closeContactModal() {
+          contactModal.classList.add('hidden');
+      }
+
+      if(contactForm) {
+          contactForm.addEventListener('submit', function(e) {
+              e.preventDefault();
+              const formData = new FormData(contactForm);
+              fetch("{{ url_for('handle_contact') }}", {
+                  method: 'POST',
+                  body: formData
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.status === 'success') {
+                      contactFormContainer.classList.add('hidden');
+                      contactSuccessContainer.classList.remove('hidden');
+                      lucide.createIcons();
+                  } else {
+                      alert('Error: ' + data.message);
+                  }
+              })
+              .catch(error => {
+                  alert('An error occurred. Please try again.');
+              });
+          });
+      }
+    </script>
+</body>
+</html>
